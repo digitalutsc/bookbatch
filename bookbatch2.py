@@ -40,24 +40,22 @@ def copytree(src, dst, symlinks=False, ignore=None):
     for item in os.listdir(src):
         s = os.path.join(src, item)
         d = os.path.join(dst, item)
-        # print(s,d,"s and d test")
-        # print "JOIN", os.path.join(d, item)
+        # print(s,d)
         if os.path.isdir(s):
             copytree(s, d, symlinks, ignore)
         else:
             # os.makedirs(os.path.join(d, item))
-            if not os.path.exists(d) or os.stat(src).st_mtime - os.stat(dst).st_mtime > 1:
-                sweetfoldername = os.path.splitext(d)[0]
-                if not os.path.exists(sweetfoldername):
-                    os.mkdir(sweetfoldername)
-                    print(sweetfoldername, "KIM KIM")
-                if d.endswith(".tif") or d.endswith(".tiff"):
-                    shutil.copy2(s, sweetfoldername)
-                    # print "jpg", os.path.splitext(d)[0]
-                elif d.endswith(".xml"):
-                    shutil.copy2(s, dst) #if there's just xml and no matching it takes out the extension
-                else:
-                    print("NOT FOR INGEST", d)
+            if d.endswith(".tif") or d.endswith(".tiff"):
+                if not os.path.exists(d) or os.stat(src).st_mtime - os.stat(dst).st_mtime > 1:
+                    sweetfoldername = os.path.splitext(d)[0]
+                    if not os.path.exists(sweetfoldername):
+                        os.mkdir(sweetfoldername)
+                        shutil.copy2(s, sweetfoldername)
+                        # print "jpg", os.path.splitext(d)[0]
+            elif d.endswith(".xml"):
+                shutil.copy2(s, dst) #if there's just xml and no matching it takes out the extension
+            else:
+                print("NOT GETTING INGESTED", d)
 
 src = str(sys.argv[1])
 dst = str(sys.argv[2])
@@ -69,8 +67,6 @@ batch_rename(dst)
 print("Renaming folders")
 number_folders(dst)
 
-
-# ISSUES: with extra directories being created for non tiff files
 # ***********************************************************************************************
 # ***********************************************************************************************
 # ***********************************************************************************************
