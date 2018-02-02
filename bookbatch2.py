@@ -4,28 +4,33 @@ import sys, os, shutil, glob
 def batch_rename(src):
     """ src->String - string representation of the directory containing items to be renamed.
 
-       The function works by looking at objects in the directory and seeing if they are a directory or a file. Files are renamed to OBJ.ext, while batch_rename is called again on directories. 
-        
+       The function works by looking at objects in the directory and seeing if they are a directory or a file. Files are renamed to OBJ.ext, while batch_rename is called again on directories.
+
         CAREFUL this function takes all files found recursively and renames them to OBJ.whatever. No checks of file type are done"""
     for f in glob.glob(src+"/*"):
+        print(f, "renaming")
         if os.path.isdir(f):
             batch_rename(f)
         else:
-            d = f[:f.rfind("/")] + "/OBJ." + f.split(".")[1]
-            print f,d
-            shutil.move(f,d)
+            if f.endswith(".tif") or f.endswith(".tiff"):
+                d = f[:f.rfind("/")] + "/OBJ." + f.split(".")[1]
+                print(f, "first name", d, "final name")
+                shutil.move(f,d)
+            elif f.endswith(".xml"):
+                print(f)
+
 
 def number_folders(src):
     """ src ->String - string representation of the directory containing items to be renamed.
 
         This function works by looking for all of the folders in the given directory. There are then in the order given, renamed to numbers 0 to X where X is the number of folders. The folder names are padded to 3 digits (ex. 002, 021, 123)
-        
+
         CAREFUL, this function takes all folders in the given folder and renames them to a numbered sequence. There is no recursion or checking of any kind """
-    count = 0
+    count = 1
     for f in glob.glob(src+"/*"):
         if os.path.isdir(f):
             d = f[:f.rfind("/")]+"/%03d"%(count)
-            print f,d
+            print(f,d)
             count += 1
             shutil.move(f,d)
 
@@ -35,7 +40,7 @@ def copytree(src, dst, symlinks=False, ignore=None):
     for item in os.listdir(src):
         s = os.path.join(src, item)
         d = os.path.join(dst, item)
-        # print s, d
+        # print(s,d,"s and d test")
         # print "JOIN", os.path.join(d, item)
         if os.path.isdir(s):
             copytree(s, d, symlinks, ignore)
@@ -45,13 +50,14 @@ def copytree(src, dst, symlinks=False, ignore=None):
                 sweetfoldername = os.path.splitext(d)[0]
                 if not os.path.exists(sweetfoldername):
                     os.mkdir(sweetfoldername)
+                    print(sweetfoldername, "KIM KIM")
                 if d.endswith(".tif") or d.endswith(".tiff"):
                     shutil.copy2(s, sweetfoldername)
                     # print "jpg", os.path.splitext(d)[0]
                 elif d.endswith(".xml"):
-                    shutil.copy2(s, sweetfoldername) #if there's just xml and no matching it takes out the extension
+                    shutil.copy2(s, dst) #if there's just xml and no matching it takes out the extension
                 else:
-                    print "NOT FOR INGEST", d
+                    print("NOT FOR INGEST", d)
 
 src = str(sys.argv[1])
 dst = str(sys.argv[2])
@@ -64,7 +70,7 @@ print("Renaming folders")
 number_folders(dst)
 
 
-
+# ISSUES: with extra directories being created for non tiff files
 # ***********************************************************************************************
 # ***********************************************************************************************
 # ***********************************************************************************************
