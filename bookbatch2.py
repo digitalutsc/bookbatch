@@ -37,7 +37,18 @@ def number_folders(src):
 def copytree(src, dst, symlinks=False, ignore=None):
     if not os.path.exists(dst):
         os.makedirs(dst)
-    for item in os.listdir(src):
+
+    # Get the listing of the folder in the natural sort order
+    file_list = os.system("ls -v " + src + " > temp.txt")
+
+    # Put the output of the command into a list
+    hdl = open("temp.txt", 'r')
+    file_list = hdl.readlines()
+    hdl.close()
+    os.remove("temp.txt")
+
+    for item in file_list:
+        item = item.rstrip()
         s = os.path.join(src, item)
         d = os.path.join(dst, item)
         # print(s,d)
