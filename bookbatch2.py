@@ -19,12 +19,14 @@ def batch_rename(src):
 
     for f in file_list:
         f = f.rstrip()
+        f = os.path.join(src, f)
         print(f, "renaming")
         if os.path.isdir(f):
             batch_rename(f)
         else:
             if f.endswith(".tif") or f.endswith(".tiff"):
                 d = f[:f.rfind("/")] + "/OBJ." + f.split(".")[1]
+                d = os.path.join(src, d)
                 print(f, "first name", d, "final name")
                 shutil.move(f,d)
             elif f.endswith(".xml"):
@@ -37,6 +39,7 @@ def number_folders(src):
         This function works by looking for all of the folders in the given directory. There are then in the order given, renamed to numbers 0 to X where X is the number of folders. The folder names are padded to 3 digits (ex. 002, 021, 123)
 
         CAREFUL, this function takes all folders in the given folder and renames them to a numbered sequence. There is no recursion or checking of any kind """
+
     # Get the listing of the folder in the natural sort order
     file_list = os.system("ls -v " + src + " > temp.txt")
 
@@ -49,9 +52,10 @@ def number_folders(src):
     count = 1
     for f in file_list:
         f = f.rstrip()
-        print(f, "numbering")
+        f = os.path.join(src, f)
         if os.path.isdir(f):
             d = f[:f.rfind("/")]+"/%03d"%(count)
+            d = os.path.join(src, d)
             print(f,d)
             count += 1
             shutil.move(f,d)
