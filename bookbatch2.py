@@ -37,8 +37,19 @@ def number_folders(src):
         This function works by looking for all of the folders in the given directory. There are then in the order given, renamed to numbers 0 to X where X is the number of folders. The folder names are padded to 3 digits (ex. 002, 021, 123)
 
         CAREFUL, this function takes all folders in the given folder and renames them to a numbered sequence. There is no recursion or checking of any kind """
+    # Get the listing of the folder in the natural sort order
+    file_list = os.system("ls -v " + src + " > temp.txt")
+
+    # Put the output of the command into a list
+    hdl = open("temp.txt", 'r')
+    file_list = hdl.readlines()
+    hdl.close()
+    os.remove("temp.txt")
+
     count = 1
-    for f in glob.glob(src+"/*"):
+    for f in file_list:
+        f = f.rstrip()
+        print(f, "numbering")
         if os.path.isdir(f):
             d = f[:f.rfind("/")]+"/%03d"%(count)
             print(f,d)
