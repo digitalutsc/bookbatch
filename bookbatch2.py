@@ -1,5 +1,6 @@
 # case sensitive
 import sys, os, shutil, glob
+import natsort
 
 def batch_rename(src):
     """ src->String - string representation of the directory containing items to be renamed.
@@ -14,6 +15,9 @@ def batch_rename(src):
     # Put the output of the command into a list
     hdl = open("temp.txt", 'r')
     file_list = hdl.readlines()
+    file_list = [item.lower() for item in file_list]
+    file_list = natsort.natsorted(file_list)
+
     hdl.close()
     os.remove("temp.txt")
 
@@ -46,6 +50,9 @@ def number_folders(src):
     # Put the output of the command into a list
     hdl = open("temp.txt", 'r')
     file_list = hdl.readlines()
+    file_list = [item.lower() for item in file_list]
+    file_list = natsort.natsorted(file_list)
+
     hdl.close()
     os.remove("temp.txt")
 
@@ -70,13 +77,16 @@ def copytree(src, dst, symlinks=False, ignore=None):
     # Put the output of the command into a list
     hdl = open("temp.txt", 'r')
     file_list = hdl.readlines()
+    file_list = natsort.natsorted(file_list)
     hdl.close()
     os.remove("temp.txt")
 
     for item in file_list:
         item = item.rstrip()
+        item_new = item.replace(" ", "_")
+        item_new = item_new.lower()
         s = os.path.join(src, item)
-        d = os.path.join(dst, item)
+        d = os.path.join(dst, item_new)
         # print(s,d)
         if os.path.isdir(s):
             copytree(s, d, symlinks, ignore)
@@ -88,6 +98,16 @@ def copytree(src, dst, symlinks=False, ignore=None):
                     if not os.path.exists(sweetfoldername):
                         os.mkdir(sweetfoldername)
                         shutil.copy2(s, sweetfoldername)
+                        dirpath, old_file_name = os.path.split(s)
+
+                        # rename file
+                        dst_file = os.path.join(sweetfoldername, old_file_name)
+                        new_file_name = old_file_name.replace(" ", "_")
+                        new_file_name = new_file_name.lower()
+                        new_dst_file_name = os.path.join(sweetfoldername, new_file_name)
+                        print "old_file_name " + old_file_name + " new_dst_file_name " + new_dst_file_name
+                        os.rename(dst_file, new_dst_file_name)
+
                         # print "jpg", os.path.splitext(d)[0]
             elif d.endswith(".xml"):
                 shutil.copy2(s, dst) #if there's just xml and no matching it takes out the extension
