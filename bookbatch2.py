@@ -7,7 +7,18 @@ def batch_rename(src):
        The function works by looking at objects in the directory and seeing if they are a directory or a file. Files are renamed to OBJ.ext, while batch_rename is called again on directories.
 
         CAREFUL this function takes all files found recursively and renames them to OBJ.whatever. No checks of file type are done"""
-    for f in glob.glob(src+"/*"):
+
+    # Get the listing of the folder in the natural sort order
+    file_list = os.system("ls -v " + src + " > temp.txt")
+
+    # Put the output of the command into a list
+    hdl = open("temp.txt", 'r')
+    file_list = hdl.readlines()
+    hdl.close()
+    os.remove("temp.txt")
+
+    for f in file_list:
+        f = f.rstrip()
         print(f, "renaming")
         if os.path.isdir(f):
             batch_rename(f)
